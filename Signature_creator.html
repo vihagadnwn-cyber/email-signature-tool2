@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Email Signature Creator | Bhoomi & Prime Lands</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #e0e8ef 0%, #d0dbe4 100%);
+            font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', Roboto, sans-serif;
+            padding: 2rem 1.5rem;
+            min-height: 100vh;
+        }
+
+        /* Smooth scroll & transitions */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Main container with glassmorphic effect */
+        .builder-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 48px;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.25), 0 2px 5px rgba(0, 0, 0, 0.02);
+            overflow: hidden;
+            backdrop-filter: blur(0px);
+            transition: all 0.3s ease;
+        }
+
+        /* Header with subtle animation */
+        .main-header {
+            background: #0b2a1f;
+            padding: 1.5rem 2rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .main-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .main-header h1 {
+            font-size: 1.7rem;
+            font-weight: 600;
+            letter-spacing: -0.4px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+        .main-header h1::before {
+            content: '✍️';
+            font-size: 1.9rem;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        /* Tab bar modern */
+        .tab-bar {
+            display: flex;
+            background: #f3efe8;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            gap: 0;
+            padding: 0 1rem;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 1rem 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border-bottom: 3px solid transparent;
+            margin-bottom: -1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            letter-spacing: -0.2px;
+        }
+
+        /* Bhoomi theme */
+        .tab-btn.bhoomi-tab {
+            color: #7a5d17;
+        }
+        .tab-btn.bhoomi-tab.active {
+            color: #b8860b;
+            border-bottom-color: #d4af37;
+            background: rgba(212, 175, 55, 0.08);
+        }
+        .tab-btn.bhoomi-tab:hover:not(.active) {
+            background: rgba(212, 175, 55, 0.05);
+            color: #9b7218;
+            transform: translateY(-2px);
+        }
+
+        /* Prime theme */
+        .tab-btn.prime-tab {
+            color: #2c5a46;
+        }
+        .tab-btn.prime-tab.active {
+            color: #1a5d3c;
+            border-bottom-color: #2e8b57;
+            background: rgba(46, 139, 86, 0.08);
+        }
+        .tab-btn.prime-tab:hover:not(.active) {
+            background: rgba(46, 139, 86, 0.05);
+            color: #1a5d3c;
+            transform: translateY(-2px);
+        }
+
+        /* Tab panels with fade animation */
+        .tab-panel {
+            display: none;
+            padding: 2rem;
+            background: white;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .tab-panel.active-panel {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Two column layout */
+        .split-layout {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .edit-column {
+            flex: 1.2;
+            min-width: 280px;
+            background: #fefcfa;
+            border-radius: 32px;
+            padding: 1.4rem;
+            transition: box-shadow 0.2s;
+        }
+
+        .preview-column {
+            flex: 1.8;
+            min-width: 300px;
+            background: #ffffff;
+            border-radius: 32px;
+            padding: 1.4rem;
+            border: 1px solid #f0e9df;
+            transition: all 0.2s;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.02);
+        }
+
+        .bhoomi-preview {
+            background: #fffdf7;
+            border-left: 5px solid #d4af37;
+        }
+        .prime-preview {
+            background: #f9fefb;
+            border-left: 5px solid #2e8b57;
+        }
+
+        /* Section titles */
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            padding-left: 0.8rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .bhoomi-title {
+            color: #b8860b;
+            border-left: 4px solid #d4af37;
+        }
+        .prime-title {
+            color: #1a5d3c;
+            border-left: 4px solid #2e8b57;
+        }
+
+        /* Form styling */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 0.4rem;
+        }
+        .bhoomi-label { color: #a67c1e; }
+        .prime-label { color: #2c5a46; }
+
+        input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #e2d8cb;
+            border-radius: 28px;
+            font-size: 0.9rem;
+            background: white;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            outline: none;
+        }
+        input:focus {
+            border-color: #d4af37;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+            transform: translateY(-1px);
+        }
+        .prime-preview input:focus {
+            border-color: #2e8b57;
+            box-shadow: 0 0 0 3px rgba(46, 139, 86, 0.2);
+        }
+
+        /* Locked info card */
+        .locked-info {
+            background: rgba(0,0,0,0.02);
+            border-radius: 24px;
+            padding: 0.8rem 1rem;
+            margin-top: 1rem;
+            border: 1px solid #ede5d8;
+            font-size: 0.7rem;
+            color: #5f6b64;
+            line-height: 1.5;
+            backdrop-filter: blur(2px);
+        }
+
+        /* Button group */
+        .btn-group {
+            margin-top: 1.8rem;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            border: none;
+            padding: 0.65rem 1.3rem;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.8rem;
+            background: #f0f2f0;
+            color: #2c3e2b;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .btn-primary {
+            background: #1a3e2f;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        .btn-primary:hover {
+            background: #0f2c21;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+        }
+        .btn-copy {
+            background: #d4af37;
+            color: #1a3e2f;
+        }
+        .btn-copy:hover {
+            background: #c9a228;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Signature Preview Styles (Outlook‑optimized) */
+        .email-sig {
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            max-width: 450px;
+            background: white;
+            color: #1f2f28;
+            line-height: 1.4;
+        }
+
+        .best-regards { font-size: 11px; font-weight: 500; margin-bottom: 2px; }
+        .bhoomi-regards { color: #1a2a24; }
+        .prime-regards { color: #2c5a46; }
+
+        .sig-name { font-size: 13px; font-weight: 700; margin: 2px 0 2px; }
+        .bhoomi-name { color: #0f2e22; }
+        .prime-name { color: #1a5d3c; }
+
+        .sig-title { font-size: 11px; font-weight: 600; margin-bottom: 6px; }
+        .bhoomi-title-color { color: #1a3a2e; }
+        .prime-title-color { color: #2c5a46; }
+
+        .contact-line { display: flex; align-items: baseline; gap: 8px; font-size: 11px; margin-bottom: 2px; flex-wrap: wrap; }
+        .contact-label { min-width: 58px; font-weight: 500; }
+        .bhoomi-label-color { color: #d4af37; }
+        .prime-label-color { color: #2e8b57; }
+        .contact-value { color: #2f4d3e; }
+
+        .logo-address-area { margin-top: 8px; }
+        .company-logo { height: auto; display: block; margin-bottom: 5px; border: none; }
+        .company-address { font-size: 10px; color: #6a7e72; line-height: 1.35; }
+        .web-link { color: #1a3e2f; text-decoration: none; }
+
+        /* Toast animation */
+        .toast-msg {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.95);
+            background: #1a3e2f;
+            color: white;
+            padding: 0.7rem 1.8rem;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.2s;
+            pointer-events: none;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            backdrop-filter: blur(4px);
+        }
+        .toast-msg.show {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+        }
+
+        @media (max-width: 750px) {
+            body { padding: 1rem; }
+            .split-layout { flex-direction: column; }
+            .tab-btn { font-size: 0.9rem; gap: 4px; }
+            .main-header h1 { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="builder-container">
+    <div class="main-header">
+        <h1>Email Signature Creator</h1>
+    </div>
+
+    <!-- Tab Buttons -->
+    <div class="tab-bar">
+        <button class="tab-btn bhoomi-tab active" data-tab="bhoomi">🏡 Bhoomi Realty</button>
+        <button class="tab-btn prime-tab" data-tab="prime">🏢 Prime Lands</button>
+    </div>
+
+    <!-- BHOOMI TAB -->
+    <div id="tab-bhoomi" class="tab-panel active-panel">
+        <div class="split-layout">
+            <div class="edit-column">
+                <div class="section-title bhoomi-title">✎ Edit your details</div>
+                <div class="form-group">
+                    <label class="bhoomi-label">👤 Your Name</label>
+                    <input type="text" id="bhoomiName" placeholder="Your Name" value="">
+                </div>
+                <div class="form-group">
+                    <label class="bhoomi-label">💼 Your Designation</label>
+                    <input type="text" id="bhoomiTitle" placeholder="Your Designation" value="">
+                </div>
+                <div class="form-group">
+                    <label class="bhoomi-label">📱 Your Mobile Number</label>
+                    <input type="text" id="bhoomiMobile" placeholder="+94 XX XXX XXXX" value="">
+                </div>
+                <div class="form-group">
+                    <label class="bhoomi-label">✉️ Your Email Address</label>
+                    <input type="email" id="bhoomiEmail" placeholder="you@company.lk" value="">
+                </div>
+                <div class="locked-info">
+                    <strong>🏢 Company fixed data</strong><br>
+                    Tel: +94 11 2 093 906<br>
+                    Web: www.bhoomirealty.lk<br>
+                    Address: 885, Kotte Road, Ethul Kotte, Sri Lanka
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="refreshBhoomiBtn">⟳ Update Preview</button>
+                    <button class="btn btn-copy" id="copyBhoomiBtn">📋 Copy Signature HTML</button>
+                </div>
+            </div>
+            <div class="preview-column bhoomi-preview">
+                <div style="font-weight: 600; margin-bottom: 12px; color: #b8860b;">📧 Live Preview (Outlook‑ready)</div>
+                <div id="bhoomiPreview"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRIME LANDS TAB -->
+    <div id="tab-prime" class="tab-panel">
+        <div class="split-layout">
+            <div class="edit-column">
+                <div class="section-title prime-title">✎ Edit your details</div>
+                <div class="form-group">
+                    <label class="prime-label">👤 Your Name</label>
+                    <input type="text" id="primeName" placeholder="Your Name" value="">
+                </div>
+                <div class="form-group">
+                    <label class="prime-label">💼 Your Designation</label>
+                    <input type="text" id="primeTitle" placeholder="Your Designation" value="">
+                </div>
+                <div class="form-group">
+                    <label class="prime-label">📱 Your Mobile Number</label>
+                    <input type="text" id="primeMobile" placeholder="+94 XX XXX XXXX" value="">
+                </div>
+                <div class="form-group">
+                    <label class="prime-label">✉️ Your Email Address</label>
+                    <input type="email" id="primeEmail" placeholder="you@company.lk" value="">
+                </div>
+                <div class="form-group">
+                    <label class="prime-label">🔢 Extension Number (Ext No:)</label>
+                    <input type="text" id="primeExt" placeholder="000" value="">
+                </div>
+                <div class="locked-info">
+                    <strong>🏢 Company fixed data</strong><br>
+                    Main Tel: +94 112 699 822<br>
+                    Web: www.primelands.lk<br>
+                    Address: No 75, D.S. Senanayake Mawatha, Colombo 8, Sri Lanka
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="refreshPrimeBtn">⟳ Update Preview</button>
+                    <button class="btn btn-copy" id="copyPrimeBtn">📋 Copy Signature HTML</button>
+                </div>
+            </div>
+            <div class="preview-column prime-preview">
+                <div style="font-weight: 600; margin-bottom: 12px; color: #2e8b57;">📧 Live Preview (Outlook‑ready)</div>
+                <div id="primePreview"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toastMsg" class="toast-msg">✓ Copied to clipboard</div>
+
+<script>
+    // --------------------------------------------------------------
+    // COMPANY DATA (unchanged)
+    // --------------------------------------------------------------
+    const BHOOMI = {
+        logo: "https://raw.githubusercontent.com/vihagadnwn-cyber/mailsignature/main/bhoomi-logo.png",
+        tel: "+94 11 2 093 906",
+        web: "www.bhoomirealty.lk",
+        companyName: "Bhoomi Realty Holdings (Pvt) Ltd.",
+        address: "885, Kotte Road,<br>Ethul Kotte,<br>Sri Lanka.",
+        logoWidth: "100px"
+    };
+
+    const PRIME = {
+        logo: "https://raw.githubusercontent.com/vihagadnwn-cyber/mailsignature/main/Untitled.png",
+        mainTel: "+94 112 699 822",
+        web: "www.primelands.lk",
+        companyName: "Prime Lands (Pvt.) Ltd",
+        address: "No 75, D.S. Senanayake Mawatha,<br>Colombo 8, Sri Lanka",
+        logoWidth: "140px"
+    };
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // Bhoomi preview
+    function buildBhoomiPreview(name, title, mobile, email) {
+        const safeName = escapeHtml(name) || "Your Name";
+        const safeTitle = escapeHtml(title) || "Your Designation";
+        const safeMobile = escapeHtml(mobile) || "Your Mobile Number";
+        const safeEmail = escapeHtml(email) || "your.email@example.com";
+
+        return `
+            <div class="email-sig">
+                <div class="best-regards bhoomi-regards">Best Regards,</div>
+                <div class="sig-name bhoomi-name">${safeName}</div>
+                <div class="sig-title bhoomi-title-color">${safeTitle}</div>
+                <div class="contact-line"><span class="contact-label bhoomi-label-color">Mobile :</span><span class="contact-value">${safeMobile}</span></div>
+                <div class="contact-line"><span class="contact-label bhoomi-label-color">Tel :</span><span class="contact-value">${BHOOMI.tel}</span></div>
+                <div class="contact-line"><span class="contact-label bhoomi-label-color">Email :</span><span class="contact-value"><a href="mailto:${safeEmail}" class="web-link">${safeEmail}</a></span></div>
+                <div class="contact-line"><span class="contact-label bhoomi-label-color">Web :</span><span class="contact-value"><a href="https://${BHOOMI.web}" target="_blank" class="web-link">${BHOOMI.web}</a></span></div>
+                <div class="logo-address-area">
+                    <img src="${BHOOMI.logo}" alt="Bhoomi Realty Holdings logo" width="${BHOOMI.logoWidth}" height="auto" style="width:${BHOOMI.logoWidth}; height:auto; display:block; margin-bottom:5px; border:none;" onerror="this.style.display='none';">
+                    <div class="company-address">${BHOOMI.companyName}<br>${BHOOMI.address}</div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Prime preview
+    function buildPrimePreview(name, title, mobile, email, ext) {
+        const safeName = escapeHtml(name) || "Your Name";
+        const safeTitle = escapeHtml(title) || "Your Designation";
+        const safeMobile = escapeHtml(mobile) || "Your Mobile Number";
+        const safeEmail = escapeHtml(email) || "your.email@example.com";
+        const safeExt = escapeHtml(ext) || "Ext";
+        const telDisplay = `${PRIME.mainTel}${safeExt ? ' | Ext : ' + safeExt : ''}`;
+
+        return `
+            <div class="email-sig">
+                <div class="best-regards prime-regards">Best Regards,</div>
+                <div class="sig-name prime-name">${safeName}</div>
+                <div class="sig-title prime-title-color">${safeTitle}</div>
+                <div class="contact-line"><span class="contact-label prime-label-color">Mobile :</span><span class="contact-value">${safeMobile}</span></div>
+                <div class="contact-line"><span class="contact-label prime-label-color">Tel :</span><span class="contact-value">${telDisplay}</span></div>
+                <div class="contact-line"><span class="contact-label prime-label-color">Email :</span><span class="contact-value"><a href="mailto:${safeEmail}" class="web-link">${safeEmail}</a></span></div>
+                <div class="contact-line"><span class="contact-label prime-label-color">Web :</span><span class="contact-value"><a href="https://${PRIME.web}" target="_blank" class="web-link">${PRIME.web}</a></span></div>
+                <div class="logo-address-area">
+                    <img src="${PRIME.logo}" alt="Prime Lands logo" width="${PRIME.logoWidth}" height="auto" style="width:${PRIME.logoWidth}; height:auto; display:block; margin-bottom:5px; border:none;" onerror="this.style.display='none';">
+                    <div class="company-address">${PRIME.companyName}<br>${PRIME.address}</div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Full HTML for copying (Bhoomi)
+    function getFullBhoomiHTML(name, title, mobile, email) {
+        const safeName = escapeHtml(name) || "Your Name";
+        const safeTitle = escapeHtml(title) || "Your Designation";
+        const safeMobile = escapeHtml(mobile) || "Your Mobile Number";
+        const safeEmail = escapeHtml(email) || "your.email@example.com";
+
+        return `<div style="margin:0;padding:0;">
+            <style>
+                .email-sig-final {
+                    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+                    max-width: 450px;
+                    background: white;
+                    color: #1f2f28;
+                    line-height: 1.4;
+                    margin:0; padding:0;
+                }
+                .best-regards-final { font-size: 11px; font-weight: 500; margin-bottom: 2px; color: #1a2a24; }
+                .sig-name-final { font-size: 13px; font-weight: 700; margin: 2px 0 2px; color: #0f2e22; }
+                .sig-title-final { font-size: 11px; font-weight: 600; margin-bottom: 6px; color: #1a3a2e; }
+                .contact-line-final { display: flex; align-items: baseline; gap: 8px; font-size: 11px; margin-bottom: 2px; flex-wrap: wrap; }
+                .contact-label-final { min-width: 58px; font-weight: 500; color: #d4af37; }
+                .contact-value-final { color: #2f4d3e; }
+                .logo-area-final { margin-top: 8px; }
+                .company-logo-final { width:100px; height:auto; display:block; margin-bottom:5px; border:none; }
+                .company-address-final { font-size: 10px; color: #6a7e72; line-height: 1.35; }
+                .web-link-final { color: #1a3e2f; text-decoration: none; }
+            </style>
+            <div class="email-sig-final">
+                <div class="best-regards-final">Best Regards,</div>
+                <div class="sig-name-final">${safeName}</div>
+                <div class="sig-title-final">${safeTitle}</div>
+                <div class="contact-line-final"><span class="contact-label-final">Mobile :</span><span class="contact-value-final">${safeMobile}</span></div>
+                <div class="contact-line-final"><span class="contact-label-final">Tel :</span><span class="contact-value-final">${BHOOMI.tel}</span></div>
+                <div class="contact-line-final"><span class="contact-label-final">Email :</span><span class="contact-value-final"><a href="mailto:${safeEmail}" class="web-link-final">${safeEmail}</a></span></div>
+                <div class="contact-line-final"><span class="contact-label-final">Web :</span><span class="contact-value-final"><a href="https://${BHOOMI.web}" target="_blank" class="web-link-final">${BHOOMI.web}</a></span></div>
+                <div class="logo-area-final">
+                    <img src="${BHOOMI.logo}" alt="Bhoomi logo" width="100" height="auto" style="width:100px; height:auto; display:block; margin-bottom:5px; border:none;" onerror="this.style.display='none';">
+                    <div class="company-address-final">${BHOOMI.companyName}<br>${BHOOMI.address}</div>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    // Full Prime HTML
+    function getFullPrimeHTML(name, title, mobile, email, ext) {
+        const safeName = escapeHtml(name) || "Your Name";
+        const safeTitle = escapeHtml(title) || "Your Designation";
+        const safeMobile = escapeHtml(mobile) || "Your Mobile Number";
+        const safeEmail = escapeHtml(email) || "your.email@example.com";
+        const safeExt = escapeHtml(ext) || "Ext";
+        const telDisplay = `${PRIME.mainTel}${safeExt ? ' | Ext : ' + safeExt : ''}`;
+
+        return `<div style="margin:0;padding:0;">
+            <style>
+                .email-sig-final {
+                    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+                    max-width: 450px;
+                    background: white;
+                    color: #1f2f28;
+                    line-height: 1.4;
+                    margin:0; padding:0;
+                }
+                .best-regards-final { font-size: 11px; font-weight: 500; margin-bottom: 2px; color: #2c5a46; }
+                .sig-name-final { font-size: 13px; font-weight: 700; margin: 2px 0 2px; color: #1a5d3c; }
+                .sig-title-final { font-size: 11px; font-weight: 600; margin-bottom: 6px; color: #2c5a46; }
+                .contact-line-final { display: flex; align-items: baseline; gap: 8px; font-size: 11px; margin-bottom: 2px; flex-wrap: wrap; }
+                .contact-label-final { min-width: 58px; font-weight: 500; color: #2e8b57; }
+                .contact-value-final { color: #2f4d3e; }
+                .logo-area-final { margin-top: 8px; }
+                .company-logo-final { width:140px; height:auto; display:block; margin-bottom:5px; border:none; }
+                .company-address-final { font-size: 10px; color: #6a7e72; line-height: 1.35; }
+                .web-link-final { color: #1a3e2f; text-decoration: none; }
+            </style>
+            <div class="email-sig-final">
+                <div class="best-regards-final">Best Regards,</div>
+                <div class="sig-name-final">${safeName}</div>
+                <div class="sig-title-final">${safeTitle}</div>
+                <div class="contact-line-final"><span class="contact-label-final">Mobile :</span><span class="contact-value-final">${safeMobile}</span></div>
+                <div class="contact-line-final"><span class="contact-label-final">Tel :</span><span class="contact-value-final">${telDisplay}</span></div>
+                <div class="contact-line-final"><span class="contact-label-final">Email :</span><span class="contact-value-final"><a href="mailto:${safeEmail}" class="web-link-final">${safeEmail}</a></span></div>
+                <div class="contact-line-final"><span class="contact-label-final">Web :</span><span class="contact-value-final"><a href="https://${PRIME.web}" target="_blank" class="web-link-final">${PRIME.web}</a></span></div>
+                <div class="logo-area-final">
+                    <img src="${PRIME.logo}" alt="Prime Lands logo" width="140" height="auto" style="width:140px; height:auto; display:block; margin-bottom:5px; border:none;" onerror="this.style.display='none';">
+                    <div class="company-address-final">${PRIME.companyName}<br>${PRIME.address}</div>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    // DOM elements
+    const bhoomiName = document.getElementById('bhoomiName');
+    const bhoomiTitle = document.getElementById('bhoomiTitle');
+    const bhoomiMobile = document.getElementById('bhoomiMobile');
+    const bhoomiEmail = document.getElementById('bhoomiEmail');
+    const bhoomiPreviewDiv = document.getElementById('bhoomiPreview');
+
+    const primeName = document.getElementById('primeName');
+    const primeTitle = document.getElementById('primeTitle');
+    const primeMobile = document.getElementById('primeMobile');
+    const primeEmail = document.getElementById('primeEmail');
+    const primeExt = document.getElementById('primeExt');
+    const primePreviewDiv = document.getElementById('primePreview');
+
+    function refreshBhoomi() {
+        bhoomiPreviewDiv.innerHTML = buildBhoomiPreview(
+            bhoomiName.value, bhoomiTitle.value, bhoomiMobile.value, bhoomiEmail.value
+        );
+    }
+    function refreshPrime() {
+        primePreviewDiv.innerHTML = buildPrimePreview(
+            primeName.value, primeTitle.value, primeMobile.value, primeEmail.value, primeExt.value
+        );
+    }
+
+    async function copyBhoomi() {
+        const html = getFullBhoomiHTML(bhoomiName.value, bhoomiTitle.value, bhoomiMobile.value, bhoomiEmail.value);
+        await copyToClipboard(html);
+        showToast("✓ Bhoomi signature copied");
+    }
+    async function copyPrime() {
+        const html = getFullPrimeHTML(primeName.value, primeTitle.value, primeMobile.value, primeEmail.value, primeExt.value);
+        await copyToClipboard(html);
+        showToast("✓ Prime Lands signature copied");
+    }
+
+    async function copyToClipboard(htmlContent) {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlContent;
+        const plainText = tempDiv.textContent || tempDiv.innerText || '';
+        try {
+            if (navigator.clipboard && navigator.clipboard.write) {
+                const htmlBlob = new Blob([htmlContent], { type: 'text/html' });
+                const textBlob = new Blob([plainText], { type: 'text/plain' });
+                await navigator.clipboard.write([
+                    new ClipboardItem({
+                        [htmlBlob.type]: htmlBlob,
+                        [textBlob.type]: textBlob,
+                    })
+                ]);
+            } else {
+                fallbackCopy(htmlContent);
+            }
+        } catch (err) {
+            fallbackCopy(htmlContent);
+        }
+    }
+
+    function fallbackCopy(html) {
+        const temp = document.createElement('div');
+        temp.contentEditable = 'true';
+        temp.innerHTML = html;
+        temp.style.position = 'fixed';
+        temp.style.left = '-9999px';
+        document.body.appendChild(temp);
+        const range = document.createRange();
+        const sel = window.getSelection();
+        range.selectNodeContents(temp);
+        sel.removeAllRanges();
+        sel.addRange(range);
+        document.execCommand('copy');
+        sel.removeAllRanges();
+        document.body.removeChild(temp);
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toastMsg');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2200);
+    }
+
+    document.getElementById('refreshBhoomiBtn').addEventListener('click', refreshBhoomi);
+    document.getElementById('copyBhoomiBtn').addEventListener('click', copyBhoomi);
+    document.getElementById('refreshPrimeBtn').addEventListener('click', refreshPrime);
+    document.getElementById('copyPrimeBtn').addEventListener('click', copyPrime);
+
+    bhoomiName.addEventListener('input', refreshBhoomi);
+    bhoomiTitle.addEventListener('input', refreshBhoomi);
+    bhoomiMobile.addEventListener('input', refreshBhoomi);
+    bhoomiEmail.addEventListener('input', refreshBhoomi);
+
+    primeName.addEventListener('input', refreshPrime);
+    primeTitle.addEventListener('input', refreshPrime);
+    primeMobile.addEventListener('input', refreshPrime);
+    primeEmail.addEventListener('input', refreshPrime);
+    primeExt.addEventListener('input', refreshPrime);
+
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const panels = document.querySelectorAll('.tab-panel');
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabId = btn.getAttribute('data-tab');
+            tabBtns.forEach(b => b.classList.remove('active'));
+            panels.forEach(p => p.classList.remove('active-panel'));
+            btn.classList.add('active');
+            document.getElementById(`tab-${tabId}`).classList.add('active-panel');
+            refreshBhoomi();
+            refreshPrime();
+        });
+    });
+
+    refreshBhoomi();
+    refreshPrime();
+</script>
+</body>
+</html>
